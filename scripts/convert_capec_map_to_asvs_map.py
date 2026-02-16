@@ -14,7 +14,10 @@ import yaml
 class ConvertVars:
     TEMPLATE_FILE_NAME: str = "EDITION-TEMPLATE-VERSION.yaml"
     DEFAULT_INPUT_PATH = Path(__file__).parent / "../source/webapp-mappings-3.0.yaml"
-    DEFAULT_ASVS_JSON_PATH = Path(__file__).parent / "../cornucopia.owasp.org/data/asvs-5.0/en/OWASP_Application_Security_Verification_Standard_5.0.0_en.json"
+    DEFAULT_ASVS_JSON_PATH = (
+        Path(__file__).parent
+        / "../cornucopia.owasp.org/data/asvs-5.0/en/OWASP_Application_Security_Verification_Standard_5.0.0_en.json"
+    )
     DEFAULT_OUTPUT_PATH = Path(__file__).parent / "../source"
     args: argparse.Namespace
 
@@ -139,11 +142,11 @@ def convert_to_output_format(
 
     for code, asvs_set in sorted(capec_map.items()):
         entry = {parameter: sorted(list(asvs_set))}
-        
+
         # Enrich with extra data if available (e.g., Description, L)
         if enrichment_data and code in enrichment_data:
             entry.update(enrichment_data[code])
-            
+
         output[code] = entry
 
     return output
@@ -275,12 +278,9 @@ def extract_asvs_details(asvs_data: dict[str, Any]) -> dict[str, dict[str, str]]
                 code = node["Shortcode"]
                 if code.startswith("V"):
                     code = code[1:]
-                
-                details[code] = {
-                    "description": node["Description"],
-                    "level": node["L"]
-                }
-            
+
+                details[code] = {"description": node["Description"], "level": node["L"]}
+
             # Recurse into children
             for key, value in node.items():
                 _walk(value)
@@ -293,13 +293,10 @@ def extract_asvs_details(asvs_data: dict[str, Any]) -> dict[str, dict[str, str]]
     return details
 
 
-
-
 def main() -> None:
     """Main execution function."""
     convert_vars.args = parse_arguments(sys.argv[1:])
     set_logging()
-
 
     logging.info("Starting CAPEC-to-ASVS mapping conversion process")
     logging.debug(" --- args = %s", str(convert_vars.args))
@@ -343,8 +340,6 @@ def main() -> None:
         else:
             logging.warning("Failed to load ASVS JSON, skipping enrichment")
 
-
-
     # Extract meta information
     meta = data.get("meta", {}).copy()
     if meta:
@@ -369,10 +364,7 @@ def main() -> None:
     asvs_to_capec_map = extract_asvs_to_capec_mappings(data)
     # Pass enrichment data here
     output_data_asvs = convert_to_output_format(
-        asvs_to_capec_map, 
-        parameter="capec_codes", 
-        meta=meta,
-        enrichment_data=asvs_details
+        asvs_to_capec_map, parameter="capec_codes", meta=meta, enrichment_data=asvs_details
     )
     # Save output YAML
     if not save_yaml_file(asvs_output_path, output_data_asvs):

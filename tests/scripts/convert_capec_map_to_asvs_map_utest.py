@@ -342,7 +342,6 @@ class TestParseArguments(unittest.TestCase):
         args = capec_map.parse_arguments(["-e", "webapp"])
         self.assertEqual(args.edition, "webapp")
 
-
     def test_parse_asvs_json_argument(self):
         """Test parsing with asvs-json argument"""
         args = capec_map.parse_arguments(["--asvs-json", "asvs.json"])
@@ -351,7 +350,19 @@ class TestParseArguments(unittest.TestCase):
     def test_parse_all_arguments(self):
         """Test parsing with all arguments"""
         args = capec_map.parse_arguments(
-            ["-i", "input.yaml", "-o", ConvertVars.OUTPUT_FILE, "-v", "3.0", "-e", "webapp", "-d", "--asvs-json", "asvs.json"]
+            [
+                "-i",
+                "input.yaml",
+                "-o",
+                ConvertVars.OUTPUT_FILE,
+                "-v",
+                "3.0",
+                "-e",
+                "webapp",
+                "-d",
+                "--asvs-json",
+                "asvs.json",
+            ]
         )
 
         self.assertEqual(args.input_path, "input.yaml")
